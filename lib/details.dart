@@ -10,14 +10,17 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  late final GlobalKey<AnimatedListState> _listKey;
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   late List<Map<String, String>> _localProducts;
+
+  final Color baseColor = const Color.fromARGB(255, 123, 255, 226);
+  final Color darkTurquoise = const Color.fromARGB(255, 0, 172, 153);
+  final Color lightTurquoise = const Color.fromARGB(255, 188, 255, 246);
 
   @override
   void initState() {
     super.initState();
     _localProducts = List<Map<String, String>>.from(widget.products);
-    _listKey = GlobalKey<AnimatedListState>();
   }
 
   void _removeProduct(int index) {
@@ -39,12 +42,26 @@ class _DetailsState extends State<Details> {
           end: const Offset(1.0, 0.0),
         ).animate(animation),
         child: ListTile(
-          leading: const Icon(Icons.pets, color: Colors.grey),
-          title: Text(product["name"] ?? ""),
-          subtitle: Text(product["description"] ?? ""),
+          leading: Icon(Icons.pets, color: Colors.grey.shade400),
+          title: Text(
+            product["Codigo"] ?? "",
+            style: TextStyle(color: darkTurquoise, fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(
+            _buildDescription(product),
+            style: TextStyle(color: darkTurquoise.withOpacity(0.7)),
+          ),
         ),
       ),
     );
+  }
+
+  String _buildDescription(Map<String, String> product) {
+    return "Raza: ${product["Raza"] ?? "-"}\n"
+        "Edad: ${product["Edad"] ?? "-"}\n"
+        "Comportamiento: ${product["Comportamiento"] ?? "-"}\n"
+        "Vacunas: ${product["Vacunas"] ?? "-"}\n"
+        "Sexo: ${product["Sexo"] ?? "-"}";
   }
 
   @override
@@ -56,35 +73,45 @@ class _DetailsState extends State<Details> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.greenAccent,
+          backgroundColor: baseColor,
           centerTitle: true,
-          title: const Text("Tabla Perros"),
+          title: Text(
+            "Tabla Perros",
+            style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          ),
           leading: IconButton(
             onPressed: () => Navigator.pop(context, _localProducts),
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back, color: darkTurquoise),
           ),
         ),
         body: AnimatedList(
           key: _listKey,
           initialItemCount: _localProducts.length,
-          padding: const EdgeInsets.all(4.0),
+          padding: const EdgeInsets.all(8.0),
           itemBuilder: (context, index, animation) {
             final product = _localProducts[index];
             return SizeTransition(
               sizeFactor: animation,
-              child: ListTile(
+              child: Card(
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(width: 1.0, color: Colors.grey.shade300),
+                  side: BorderSide(width: 1.0, color: lightTurquoise),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                leading: const Icon(Icons.pets, color: Colors.blueAccent),
-                title: Text(
-                  product["name"] ?? "",
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-                ),
-                subtitle: Text(product["description"] ?? ""),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete_forever, color: Colors.redAccent),
-                  onPressed: () => _removeProduct(index),
+                margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                child: ListTile(
+                  leading: Icon(Icons.pets, color: darkTurquoise),
+                  title: Text(
+                    product["Codigo"] ?? "",
+                    style: TextStyle(fontWeight: FontWeight.bold, color: darkTurquoise, fontSize: 18),
+                  ),
+                  subtitle: Text(
+                    _buildDescription(product),
+                    style: TextStyle(color: darkTurquoise.withOpacity(0.8)),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete_forever, color: Colors.redAccent.shade400),
+                    onPressed: () => _removeProduct(index),
+                  ),
                 ),
               ),
             );
